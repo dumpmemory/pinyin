@@ -435,7 +435,7 @@ echo Pinyin::yuToV()->sentence('旅行', 'none');
 
 > **Warning**
 >
-> 仅在拼音风格为非 `none` 模式下有效。
+> 仅在拼音风格为非 `symbol` 模式下有效。
 
 ## 命令行工具
 
@@ -456,7 +456,7 @@ php ./bin/pinyin --help
 # Options:
 #     -j, --json               输出 JSON 格式.
 #     -c, --compact            不格式化输出 JSON.
-#     -m, --method=[method]    转换方式，可选：sentence/fullSentence/permalink/abbr/nameAbbr/name/passportName/phrase/heteronym/chars.
+#     -m, --method=[method]    转换方式，可选：sentence/fullSentence/name/passportName/phrase/permalink/heteronym/heteronymAsList/chars/abbr/nameAbbr.
 #     --no-tone                不使用音调.
 #     --tone-style=[style]     音调风格，可选值：symbol/none/number, default: none.
 #     -h, --help               显示帮助.

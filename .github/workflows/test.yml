@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   phpunit:
-    name: PHP-${{ matrix.php_version }}-${{ matrix.perfer }}
+    name: PHP-${{ matrix.php_version }}-${{ matrix.prefer }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -14,12 +14,16 @@ jobs:
           - 8.3
           - 8.4
           - 8.5
-        perfer:
+        prefer:
           - stable
           - lowest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_version }}
+        coverage: none
     - name: Install Dependencies
-      run: composer update --prefer-dist --no-interaction --no-suggest --prefer-${{ matrix.perfer }}
+      run: composer update --prefer-dist --no-interaction --prefer-${{ matrix.prefer }}
     - name: Run PHPUnit
       run: ./vendor/bin/phpunit

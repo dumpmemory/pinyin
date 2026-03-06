@@ -47,23 +47,29 @@ function get_option($option, $default = null, $alias = null): ?string
 
 $inputOptions = parse_options($argv);
 $input = $inputOptions[0] ?? null;
+$positionalMethod = $inputOptions[1] ?? null;
 
 if (empty($input) || has_option('help', 'h')) {
     echo $help;
     exit(0);
 }
 
-$method = get_option('method', $method, 'm');
+$method = get_option('method', $positionalMethod ?? $method, 'm');
 $toneStyle = has_option('no-tone') ? 'none' : get_option('tone-style', 'none');
 
-if (! in_array($method, $methods)) {
+if (! in_array($method, $methods, true)) {
     echo "Method '{$method}' is not supported.\n";
     exit(1);
 }
 
-$result = Pinyin::$method($input, $method === 'permalink' ? '-' : $toneStyle);
+try {
+    $result = Pinyin::$method($input, $method === 'permalink' ? '-' : $toneStyle);
+} catch (\InvalidArgumentException|\ValueError $e) {
+    echo $e->getMessage(), "\n";
+    exit(1);
+}
 
-$toJson = has_option('json', 'j') || in_array($method, ['heteronym', 'heteronymAsList']);
+$toJson = has_option('json', 'j') || in_array($method, ['heteronym', 'heteronymAsList'], true);
 
 if ($toJson) {
     $options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;

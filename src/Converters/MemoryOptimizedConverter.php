@@ -44,8 +44,8 @@ class MemoryOptimizedConverter extends AbstractConverter
         }
 
         // 按顺序加载词典段（长词优先）
-        for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
-            $string = strtr($string, require sprintf(self::WORDS_PATH, $i));
+        foreach ($this->wordSegmentPaths() as $path) {
+            $string = strtr($string, require $path);
         }
 
         return $this->split($string);

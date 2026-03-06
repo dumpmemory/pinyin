@@ -3,6 +3,7 @@
 namespace Overtrue\Pinyin;
 
 use ArrayAccess;
+use JsonException;
 use JsonSerializable;
 use Stringable;
 
@@ -37,9 +38,12 @@ class Collection implements ArrayAccess, JsonSerializable, Stringable
         return $this->all();
     }
 
+    /**
+     * @throws JsonException
+     */
     public function toJson(int $options = 0): string
     {
-        return json_encode($this->all(), $options);
+        return json_encode($this->all(), $options | JSON_THROW_ON_ERROR);
     }
 
     public function __toString(): string

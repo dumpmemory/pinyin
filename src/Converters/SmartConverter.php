@@ -71,26 +71,29 @@ class SmartConverter extends AbstractConverter
         if (self::$fullDictionary === null) {
             self::$fullDictionary = [];
             // 按顺序加载，保证长词优先
-            for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
-                self::$fullDictionary += $this->loadSegmentWithCache($i);
+            foreach ($this->wordSegmentPaths() as $path) {
+                self::$fullDictionary += $this->loadSegmentWithCache($path);
             }
         }
 
         return self::$fullDictionary;
     }
 
-    private function loadSegmentWithCache(int $index): array
+    private function loadSegmentWithCache(string $path): array
     {
-        if (! isset(self::$segmentCache[$index])) {
+        if (! isset(self::$segmentCache[$path])) {
             // 缓存数量限制
             if (count(self::$segmentCache) >= self::MAX_CACHE_SEGMENTS) {
-                // 移除最早的缓存（简单的FIFO）
-                array_shift(self::$segmentCache);
+                // 移除最早的缓存（简单的 FIFO）
+                $firstKey = array_key_first(self::$segmentCache);
+                if ($firstKey !== null) {
+                    unset(self::$segmentCache[$firstKey]);
+                }
             }
-            self::$segmentCache[$index] = require sprintf(self::WORDS_PATH, $index);
+            self::$segmentCache[$path] = require $path;
         }
 
-        return self::$segmentCache[$index];
+        return self::$segmentCache[$path];
     }
 
     protected function convertAsChars(string $string, bool $polyphonic = false): Collection

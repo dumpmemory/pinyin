@@ -264,6 +264,8 @@ class PinyinTest extends TestCase
         $this->assertPinyin('cè ce5 shì Rr60', Pinyin::sentence('测ce5试Rr60'));
         $this->assertPinyin('cè 3sh4i R50', Pinyin::sentence('测3sh4i R50'));
         $this->assertPinyin('ce3sh4i R50', Pinyin::sentence('ce3sh4i R50'));
+        $this->assertPinyin('0', Pinyin::sentence('0'));
+        $this->assertPinyin('0 nǐ', Pinyin::sentence('0你'));
         $this->assertPinyin('33ai4', Pinyin::sentence('33ai4'));
         $this->assertPinyin('33ai4 nǐ', Pinyin::sentence('33ai4你'));
         $this->assertPinyin('ài 334 nǐ', Pinyin::sentence('爱334你'));

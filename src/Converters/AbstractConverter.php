@@ -6,7 +6,6 @@ use Overtrue\Pinyin\Collection;
 use Overtrue\Pinyin\Contracts\ConverterInterface;
 use Overtrue\Pinyin\ToneStyle;
 
-use function array_values;
 use function implode;
 use function preg_replace;
 use function sprintf;
@@ -15,9 +14,7 @@ use function str_replace;
 
 abstract class AbstractConverter implements ConverterInterface
 {
-    protected const SEGMENTS_COUNT = 10;
-
-    protected const WORDS_PATH = __DIR__.'/../../data/words-%s.php';
+    protected const WORDS_GLOB_PATH = __DIR__.'/../../data/words-*.php';
 
     protected const CHARS_PATH = __DIR__.'/../../data/chars.php';
 
@@ -46,6 +43,8 @@ abstract class AbstractConverter implements ConverterInterface
         'hans' => '\x{3007}\x{2E80}-\x{2FFF}\x{3100}-\x{312F}\x{31A0}-\x{31EF}\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}',
         'punctuation' => '\p{P}',
     ];
+
+    private static ?array $wordSegmentPaths = null;
 
     abstract public function convert(string $string): Collection;
 
@@ -183,7 +182,7 @@ abstract class AbstractConverter implements ConverterInterface
 
     protected function split(string $item): Collection
     {
-        $items = array_values(array_filter(preg_split('/\s+/i', $item)));
+        $items = preg_split('/\s+/u', trim($item), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         foreach ($items as $index => $item) {
             $items[$index] = $this->formatTone($item, $this->toneStyle->value);
@@ -225,5 +224,22 @@ abstract class AbstractConverter implements ConverterInterface
         }
 
         return $pinyin;
+    }
+
+    protected function wordSegmentPaths(): array
+    {
+        if (self::$wordSegmentPaths !== null) {
+            return self::$wordSegmentPaths;
+        }
+
+        $paths = glob(self::WORDS_GLOB_PATH);
+
+        if (! is_array($paths)) {
+            return self::$wordSegmentPaths = [];
+        }
+
+        sort($paths, SORT_NATURAL);
+
+        return self::$wordSegmentPaths = $paths;
     }
 }

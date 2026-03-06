@@ -64,21 +64,21 @@ class CachedConverter extends AbstractConverter
         if (self::$fullDictionary === null) {
             self::$fullDictionary = [];
             // 按顺序加载，保证长词优先
-            for ($i = 0; $i < self::SEGMENTS_COUNT; $i++) {
-                self::$fullDictionary += $this->loadWordsSegment($i);
+            foreach ($this->wordSegmentPaths() as $path) {
+                self::$fullDictionary += $this->loadWordsSegment($path);
             }
         }
 
         return self::$fullDictionary;
     }
 
-    private function loadWordsSegment(int $index): array
+    private function loadWordsSegment(string $path): array
     {
-        if (! isset(self::$wordsCache[$index])) {
-            self::$wordsCache[$index] = require sprintf(self::WORDS_PATH, $index);
+        if (! isset(self::$wordsCache[$path])) {
+            self::$wordsCache[$path] = require $path;
         }
 
-        return self::$wordsCache[$index];
+        return self::$wordsCache[$path];
     }
 
     protected function convertAsChars(string $string, bool $polyphonic = false): Collection

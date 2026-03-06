@@ -2,6 +2,7 @@
 
 namespace Overtrue\Pinyin\Tests;
 
+use JsonException;
 use Overtrue\Pinyin\Collection;
 use PHPUnit\Framework\TestCase;
 
@@ -318,5 +319,12 @@ class CollectionTest extends TestCase
 
         $this->assertLessThan(0.1, $time, 'Map operation should be fast');
         $this->assertEquals(2000, $result[999]); // 最后一个元素应该是 1000 * 2
+    }
+
+    public function test_to_json_throws_on_invalid_utf8(): void
+    {
+        $this->expectException(JsonException::class);
+
+        (new Collection(["\xFF"]))->toJson();
     }
 }
